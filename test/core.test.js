@@ -94,30 +94,30 @@ const ev = (ctx, code) => JSON.parse(vm.runInContext(`JSON.stringify(${code})`, 
 
 test('piece-set scripts register, loaded after or before the library', () => {
   const after = browserContext();
-  run(after, 'dist/slate-chessboard.js');
-  assert.deepEqual(ev(after, 'SlateChessboard.pieceSets()'), []);
+  run(after, 'dist/pgn-replay.js');
+  assert.deepEqual(ev(after, 'PgnReplay.pieceSets()'), []);
   run(after, 'dist/pieces/modern-staunton.js');
   run(after, 'dist/pieces/classic-staunton.js');
-  assert.deepEqual(ev(after, 'SlateChessboard.pieceSets()'), [
+  assert.deepEqual(ev(after, 'PgnReplay.pieceSets()'), [
     { id: 'classic-staunton', label: 'Classic Staunton', licence: 'Unlicense' },
     { id: 'modern-staunton', label: 'Modern Staunton', licence: 'BSD-3-Clause' },
   ]);
 
   const before = browserContext();
   run(before, 'dist/pieces/modern-staunton.js');
-  run(before, 'dist/slate-chessboard.js');
-  assert.deepEqual(ev(before, 'SlateChessboard.pieceSets().map(p => p.id)'), ['modern-staunton']);
-  assert.match(ev(before, 'SlateChessboard.boardDocument({ fen: SlateChessboard.START_FEN }, SlateChessboard.resolveTheme({ pieceSet: "modern-staunton" }))'), /<symbol id="cs-wK"/);
+  run(before, 'dist/pgn-replay.js');
+  assert.deepEqual(ev(before, 'PgnReplay.pieceSets().map(p => p.id)'), ['modern-staunton']);
+  assert.match(ev(before, 'PgnReplay.boardDocument({ fen: PgnReplay.START_FEN }, PgnReplay.resolveTheme({ pieceSet: "modern-staunton" }))'), /<symbol id="cs-wK"/);
 });
 
 test('the one-tag build carries Classic Staunton and the stylesheet', () => {
   const ctx = browserContext();
-  run(ctx, 'dist/slate-chessboard.all.js');
-  assert.deepEqual(ev(ctx, 'SlateChessboard.pieceSets().map(p => p.id)'), ['classic-staunton']);
-  assert.equal(ev(ctx, 'SlateChessboard.schemes().length'), 20);
-  const all = read('dist/slate-chessboard.all.js');
-  assert.ok(all.includes('.slate-chessboard .sb-bar'), 'CSS is inlined');
-  assert.ok(all.includes('slate-chessboard-css'));
+  run(ctx, 'dist/pgn-replay.all.js');
+  assert.deepEqual(ev(ctx, 'PgnReplay.pieceSets().map(p => p.id)'), ['classic-staunton']);
+  assert.equal(ev(ctx, 'PgnReplay.schemes().length'), 20);
+  const all = read('dist/pgn-replay.all.js');
+  assert.ok(all.includes('.pgn-replay .sb-bar'), 'CSS is inlined');
+  assert.ok(all.includes('pgn-replay-css'));
 });
 
 test('dist has no companion set and keeps the licence notices', () => {
@@ -126,8 +126,8 @@ test('dist has no companion set and keeps the licence notices', () => {
   for (const f of files) {
     const text = read(path.join('dist', f));
     assert.ok(!/companion/i.test(text), `${f} mentions companion`);
-    if (/^slate-chessboard\.(js|mjs|all\.js)$/.test(f)) {
-      assert.ok(text.startsWith('/*! Slate Chessboard '), `${f} banner`);
+    if (/^pgn-replay\.(js|mjs|all\.js)$/.test(f)) {
+      assert.ok(text.startsWith('/*! PGN Replay '), `${f} banner`);
       assert.ok(text.includes('Copyright (c) 2025, Jeff Hlywa'), `${f} keeps the chess.js notice`);
       assert.ok(text.includes('THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS'), `${f} keeps the chess.js disclaimer`);
     }

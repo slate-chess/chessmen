@@ -1,7 +1,7 @@
-Slate Chessboard
+PGN Replay
 Copyright 2026 Linu Alex
 Created by Linu Alex for Slate Chess (https://slatechess.com).
-https://github.com/alexlinu/slate-chessboard
+https://github.com/slate-chess/pgn-replay
 
 This product includes third-party software:
   - chess.js, Copyright (c) Jeff Hlywa. BSD 2-Clause License.

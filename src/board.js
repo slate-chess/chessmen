@@ -1,12 +1,12 @@
 // Copyright 2026 Linu Alex. SPDX-License-Identifier: Apache-2.0
-// Slate Chessboard: the replay board for web pages. Look, controls, autoplay, game list and
+// PGN Replay: the replay board for web pages. Look, controls, autoplay, game list and
 // appearance menus, on top of the stage (stage.js). API: README.md.
 import { SCHEMES, SCHEME_LABELS, PIECE_COLOURS, PIECE_COLOUR_LABELS } from './theme.js';
 import { pieceSets as registeredSets } from './render.js';
 import { loadGame, plyRecord, moveLabel, lastPly as gameLastPly } from './game.js';
 import { create as createStage } from './stage.js';
 
-export const VERSION = '0.4.0';
+export const VERSION = '0.5.0';
 
 // The Slate look: the app's default board. Any stage theme key can be overridden per board.
 // pieceSet falls back along PIECE_ORDER to the first set the page has loaded.
@@ -31,7 +31,7 @@ export function pieceColours() {
 function colourId(name) {
   if (name && typeof name === 'object') return name;            // custom { light, dark, line? }
   if (name in PIECE_COLOURS) return name;
-  throw new Error(`Slate Chessboard: unknown piece colours "${name}". Known: ${Object.keys(PIECE_COLOURS).join(', ')}`);
+  throw new Error(`PGN Replay: unknown piece colours "${name}". Known: ${Object.keys(PIECE_COLOURS).join(', ')}`);
 }
 
 /** Piece sets loaded on this page: [{ id, label, licence }]. Load more with pieces/<name>.js. */
@@ -45,15 +45,15 @@ export function pieceSets() {
 function pieceId(name) {
   const id = PIECE_ALIASES[name] || name;
   const have = pieceSets().map((p) => p.id);
-  if (!have.length) throw new Error('Slate Chessboard: no piece set loaded. Use slate-chessboard.all.js, or add <script src="pieces/classic-staunton.js"> after slate-chessboard.js.');
+  if (!have.length) throw new Error('PGN Replay: no piece set loaded. Use pgn-replay.all.js, or add <script src="pieces/classic-staunton.js"> after pgn-replay.js.');
   if (have.includes(id)) return id;
-  if (name && typeof console !== 'undefined') console.warn(`Slate Chessboard: piece set "${name}" isn't loaded (add pieces/${id}.js); using ${have[0]}.`);
+  if (name && typeof console !== 'undefined') console.warn(`PGN Replay: piece set "${name}" isn't loaded (add pieces/${id}.js); using ${have[0]}.`);
   return have[0];
 }
 function schemeId(name) {
   if (name && typeof name === 'object') return name;            // custom { light, dark, hlLight, hlDark }
   if (SCHEMES[name]) return name;
-  throw new Error(`Slate Chessboard: unknown board colours "${name}". Known: ${Object.keys(SCHEMES).join(', ')}`);
+  throw new Error(`PGN Replay: unknown board colours "${name}". Known: ${Object.keys(SCHEMES).join(', ')}`);
 }
 
 const store = {
@@ -127,9 +127,9 @@ const reducedMotion = () => typeof matchMedia !== 'undefined' && matchMedia('(pr
  *   controls    show the button bar (true); picker: show the game menu when there are 2+ games (true)
  *   meta        show players, result and move counter above the board (true)
  *   orientation "white" | "black"
- *   scheme      board colours: an id from SlateChessboard.schemes() or { light, dark, hlLight, hlDark }
- *   pieces      piece set id from SlateChessboard.pieceSets() ("classic-staunton", "modern-staunton")
- *   pieceColours piece colours from SlateChessboard.pieceColours() ("original", ..., "amberSky"), or { light, dark, line? }
+ *   scheme      board colours: an id from PgnReplay.schemes() or { light, dark, hlLight, hlDark }
+ *   pieces      piece set id from PgnReplay.pieceSets() ("classic-staunton", "modern-staunton")
+ *   pieceColours piece colours from PgnReplay.pieceColours() ("original", ..., "amberSky"), or { light, dark, line? }
  *   appearance  show board-colour and piece menus in the bar (false)
  *   remember    localStorage key: keep the visitor's scheme and pieces across visits (off)
  *   theme       any other stage theme overrides (see BOARD_THEME and DEFAULT_THEME)
@@ -140,7 +140,7 @@ export function create(host, opts = {}) {
     controls: true, picker: true, meta: true, orientation: 'white', ...opts,
   };
   let games = toGames(o.fen ? [{ fen: o.fen }] : o.games);
-  if (!games.length) throw new Error('Slate Chessboard: no games (give it PGN text or a FEN)');
+  if (!games.length) throw new Error('PGN Replay: no games (give it PGN text or a FEN)');
   // Positions alone have nothing to play through, so they start paused unless autoplay is asked for.
   if (opts.autoplay === undefined && games.every((g) => g.fen)) o.autoplay = false;
 
@@ -149,7 +149,7 @@ export function create(host, opts = {}) {
   let index = Math.min(Math.max(0, o.game | 0), games.length - 1);
   let timer = 0, holdUntil = 0, wantPlay = !!o.autoplay, visible = true;
 
-  host.classList.add('slate-chessboard');
+  host.classList.add('pgn-replay');
   host.innerHTML = '';
   const meta = o.meta ? el('div', 'sb-meta') : null;
   const stageEl = el('div', 'sb-stage');
@@ -298,11 +298,11 @@ export function create(host, opts = {}) {
     last() { stage.last(); return api; },
     goto(ply) { stage.goto(ply); return api; },
     flip() { stage.flip(); update(); return api; },
-    /** Board colours: an id from SlateChessboard.schemes(), or { light, dark, hlLight, hlDark }. */
+    /** Board colours: an id from PgnReplay.schemes(), or { light, dark, hlLight, hlDark }. */
     setScheme(id) { applyLook({ scheme: schemeId(id) }); return api; },
-    /** Piece set: an id from SlateChessboard.pieceSets(). */
+    /** Piece set: an id from PgnReplay.pieceSets(). */
     setPieces(id) { applyLook({ pieceSet: pieceId(id) }); return api; },
-    /** Piece colours: an id from SlateChessboard.pieceColours(), or { light, dark, line? }. */
+    /** Piece colours: an id from PgnReplay.pieceColours(), or { light, dark, line? }. */
     setPieceColours(id) { applyLook({ pieceColours: colourId(id) }); return api; },
     get appearance() { return { scheme: look.scheme, pieces: look.pieceSet, pieceColours: look.pieceColours }; },
     setTheme(t) {
@@ -331,7 +331,7 @@ export function create(host, opts = {}) {
     destroy() {
       stop(); io && io.disconnect();
       document.removeEventListener('visibilitychange', onVis);
-      stage.destroy(); host.innerHTML = ''; host.classList.remove('slate-chessboard');
+      stage.destroy(); host.innerHTML = ''; host.classList.remove('pgn-replay');
     },
   };
 
@@ -340,12 +340,12 @@ export function create(host, opts = {}) {
   return api;
 }
 
-/** Mounts every <div data-slate-chessboard='{"interval":900}'> on the page. Games come from a child
+/** Mounts every <div data-pgn-replay='{"interval":900}'> on the page. Games come from a child
  *  <script type="application/x-chess-pgn">, the element's text, or a data-src URL: PGN or a FEN. */
 export function autoInit(scope = document) {
-  return Promise.all([...scope.querySelectorAll('[data-slate-chessboard]:not([data-slate-chessboard-ready])')].map(async (node) => {
-    node.setAttribute('data-slate-chessboard-ready', '');
-    const attr = node.getAttribute('data-slate-chessboard');
+  return Promise.all([...scope.querySelectorAll('[data-pgn-replay]:not([data-pgn-replay-ready])')].map(async (node) => {
+    node.setAttribute('data-pgn-replay-ready', '');
+    const attr = node.getAttribute('data-pgn-replay');
     const opts = attr && attr.trim().startsWith('{') ? JSON.parse(attr) : {};
     const script = node.querySelector('script[type="application/x-chess-pgn"]');
     let pgn = opts.games || (script ? script.textContent : node.textContent);

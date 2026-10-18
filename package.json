@@ -1,40 +1,41 @@
 {
-  "name": "slate-chessboard",
-  "version": "0.4.0",
-  "private": true,
-  "description": "Animated chessboard for the web: replay PGN games with move animation, arrows and variations. 20 board colour schemes, Staunton pieces, one script tag, no dependencies. LLM-friendly (llms.txt).",
-  "homepage": "https://slatechess.com/opensource/slate-chessboard-demo.html",
+  "name": "pgn-replay",
+  "version": "0.5.0",
+  "description": "Embed a PGN replay on any web page: one script tag, zero dependencies. Animated moves, arrows, variations, FEN diagrams and 20 board themes. A chess PGN viewer and chessboard that needs no build step. LLM-friendly (llms.txt).",
+  "homepage": "https://slatechess.com/opensource/pgn-replay-demo.html",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alexlinu/slate-chessboard.git"
+    "url": "git+https://github.com/slate-chess/pgn-replay.git"
   },
   "bugs": {
-    "url": "https://github.com/alexlinu/slate-chessboard/issues"
+    "url": "https://github.com/slate-chess/pgn-replay/issues"
   },
   "keywords": [
+    "pgn",
+    "pgn-replay",
+    "pgn-viewer",
     "chess",
     "chessboard",
     "chess-board",
-    "pgn",
-    "pgn-viewer",
-    "replay",
-    "svg",
-    "animation",
+    "fen",
     "diagram",
-    "variations"
+    "replay",
+    "animation",
+    "variations",
+    "svg"
   ],
   "type": "module",
-  "main": "dist/slate-chessboard.mjs",
-  "module": "dist/slate-chessboard.mjs",
-  "browser": "dist/slate-chessboard.js",
+  "main": "dist/pgn-replay.mjs",
+  "module": "dist/pgn-replay.mjs",
+  "browser": "dist/pgn-replay.js",
   "exports": {
     ".": {
-      "import": "./dist/slate-chessboard.mjs",
-      "default": "./dist/slate-chessboard.js"
+      "import": "./dist/pgn-replay.mjs",
+      "default": "./dist/pgn-replay.js"
     },
     "./src": "./src/index.js",
-    "./all": "./dist/slate-chessboard.all.js",
-    "./slate-chessboard.css": "./dist/slate-chessboard.css",
+    "./all": "./dist/pgn-replay.all.js",
+    "./pgn-replay.css": "./dist/pgn-replay.css",
     "./pieces/*": "./dist/pieces/*"
   },
   "files": [
@@ -61,6 +62,6 @@
   "devDependencies": {
     "esbuild": "0.28.2"
   },
-  "author": "Linu Alex (https://slatechess.com)",
+  "author": "Turtle Leap LLC (https://slatechess.com)",
   "license": "Apache-2.0"
 }

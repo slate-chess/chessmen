@@ -1,9 +1,9 @@
 // Copyright 2026 Linu Alex. SPDX-License-Identifier: Apache-2.0
 // Builds dist/ with esbuild:
-//   slate-chessboard.js      one <script>, global SlateChessboard (bring your own piece set and CSS)
-//   slate-chessboard.mjs     ES module, same API, no auto-mounting
-//   slate-chessboard.all.js  one <script> with the CSS and Classic Staunton built in
-//   slate-chessboard.css     the stylesheet
+//   pgn-replay.js      one <script>, global PgnReplay (bring your own piece set and CSS)
+//   pgn-replay.mjs     ES module, same API, no auto-mounting
+//   pgn-replay.all.js  one <script> with the CSS and Classic Staunton built in
+//   pgn-replay.css     the stylesheet
 //   pieces/<name>.js         a script that registers the set; pieces/<name>.mjs exports it
 // chess.js is bundled from node_modules with its BSD 2-Clause notice kept in the output.
 import { build } from 'esbuild';
@@ -17,7 +17,7 @@ const { version } = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 
 const board = fs.readFileSync(path.join(root, 'src/board.js'), 'utf8').match(/VERSION = '([^']+)'/)[1];
 if (board !== version) throw new Error(`package.json says ${version} but src/board.js says ${board}`);
 
-const banner = `/*! Slate Chessboard ${version} | Copyright 2026 Linu Alex | Apache-2.0 | https://slatechess.com\n`
+const banner = `/*! PGN Replay ${version} | Copyright 2026 Linu Alex | Apache-2.0 | https://slatechess.com\n`
   + ' * Keep the NOTICE file with any copy or derivative (Apache 2.0, section 4(d)). Source: src/ in the package. */';
 
 // chess.js ships without a licence comment in its code, so attach its LICENSE as a legal comment.
@@ -40,12 +40,12 @@ const common = {
   bundle: true, minify: true, target: 'es2020', legalComments: 'inline', banner: { js: banner },
   plugins: [chessNotice], loader: { '.css': 'text' }, absWorkingDir: root, logLevel: 'warning',
 };
-await build({ ...common, entryPoints: ['src/browser.js'], format: 'iife', globalName: 'SlateChessboard', outfile: 'dist/slate-chessboard.js' });
-await build({ ...common, entryPoints: ['src/index.js'], format: 'esm', outfile: 'dist/slate-chessboard.mjs' });
-await build({ ...common, entryPoints: ['src/all.js'], format: 'iife', globalName: 'SlateChessboard', outfile: 'dist/slate-chessboard.all.js' });
+await build({ ...common, entryPoints: ['src/browser.js'], format: 'iife', globalName: 'PgnReplay', outfile: 'dist/pgn-replay.js' });
+await build({ ...common, entryPoints: ['src/index.js'], format: 'esm', outfile: 'dist/pgn-replay.mjs' });
+await build({ ...common, entryPoints: ['src/all.js'], format: 'iife', globalName: 'PgnReplay', outfile: 'dist/pgn-replay.all.js' });
 
-const css = fs.readFileSync(path.join(root, 'src/slate-chessboard.css'), 'utf8').replace(/^\/\*.*?\*\/\n/s, '');
-fs.writeFileSync(path.join(dist, 'slate-chessboard.css'), banner + '\n' + css);
+const css = fs.readFileSync(path.join(root, 'src/pgn-replay.css'), 'utf8').replace(/^\/\*.*?\*\/\n/s, '');
+fs.writeFileSync(path.join(dist, 'pgn-replay.css'), banner + '\n' + css);
 
 for (const f of fs.readdirSync(path.join(root, 'src/pieces')).filter((f) => f.endsWith('.js'))) {
   const name = f.replace(/\.js$/, '');
@@ -53,7 +53,7 @@ for (const f of fs.readdirSync(path.join(root, 'src/pieces')).filter((f) => f.en
   await build({
     ...common, banner: undefined, format: 'iife', outfile: `dist/pieces/${name}.js`,
     stdin: {
-      contents: `import set from './src/pieces/${f}';\nconst S = globalThis.SlateChessboard;\nif (S && S.registerPieceSet) S.registerPieceSet(set);\n(globalThis.SlateChessboardPieceSets ||= {})[set.name] = set;`,
+      contents: `import set from './src/pieces/${f}';\nconst S = globalThis.PgnReplay;\nif (S && S.registerPieceSet) S.registerPieceSet(set);\n(globalThis.PgnReplayPieceSets ||= {})[set.name] = set;`,
       resolveDir: root, loader: 'js',
     },
   });

@@ -1,10 +1,10 @@
 // Copyright 2026 Linu Alex. SPDX-License-Identifier: Apache-2.0
 // The stage: mounts one animated board into an element and exposes one small API that a
 // page, an LLM-generated artifact, or a parent window (via postMessage) can drive.
-// SlateChessboard.create (board.js) builds on it; use it directly as
-// SlateChessboard.createStage, or through board.stage.
+// PgnReplay.create (board.js) builds on it; use it directly as
+// PgnReplay.createStage, or through board.stage.
 //
-//   const stage = SlateChessboard.createStage(el, { pgn, controls: true });
+//   const stage = PgnReplay.createStage(el, { pgn, controls: true });
 //   stage.goto('9...b5'); stage.setMarks({ arrows: ['f1c4 blue'] });
 //   stage.openVariation({ pgnVariation: '15...Nxd7' }); stage.variationNext();
 import { loadGame, fenAt, plyRecord, findPly, playLine, moveLabel, lastPly } from './game.js';
@@ -236,14 +236,14 @@ export function create(el, opts = {}) {
 /**
  * Let a parent window drive a stage inside an iframe — the shape sandboxed LLM
  * artifacts and embedding hosts can use:
- *   iframe.contentWindow.postMessage({ slateChessboard: 'goto', args: ['14...Nxe4'] }, '*')
+ *   iframe.contentWindow.postMessage({ pgnReplay: 'goto', args: ['14...Nxe4'] }, '*')
  */
 export function listen(stage, target = typeof window !== 'undefined' ? window : null) {
   if (!target) return;
   target.addEventListener('message', (e) => {
-    const { slateChessboard: method, args = [] } = e.data || {};
+    const { pgnReplay: method, args = [] } = e.data || {};
     if (!method || typeof stage[method] !== 'function') return;
-    try { stage[method](...args); e.source?.postMessage({ slateChessboard: 'ok', method, state: stage.state }, '*'); }
-    catch (err) { e.source?.postMessage({ slateChessboard: 'error', method, message: err.message }, '*'); }
+    try { stage[method](...args); e.source?.postMessage({ pgnReplay: 'ok', method, state: stage.state }, '*'); }
+    catch (err) { e.source?.postMessage({ pgnReplay: 'error', method, message: err.message }, '*'); }
   });
 }
