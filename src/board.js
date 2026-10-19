@@ -1,5 +1,5 @@
 // Copyright 2026 Linu Alex. SPDX-License-Identifier: Apache-2.0
-// PGN Replay: the replay board for web pages. Look, controls, autoplay, game list and
+// chessmen: the replay board for web pages. Look, controls, autoplay, game list and
 // appearance menus, on top of the stage (stage.js). API: README.md.
 import { SCHEMES, SCHEME_LABELS, PIECE_COLOURS, PIECE_COLOUR_LABELS } from './theme.js';
 import { pieceSets as registeredSets } from './render.js';
@@ -31,7 +31,7 @@ export function pieceColours() {
 function colourId(name) {
   if (name && typeof name === 'object') return name;            // custom { light, dark, line? }
   if (name in PIECE_COLOURS) return name;
-  throw new Error(`PGN Replay: unknown piece colours "${name}". Known: ${Object.keys(PIECE_COLOURS).join(', ')}`);
+  throw new Error(`chessmen: unknown piece colours "${name}". Known: ${Object.keys(PIECE_COLOURS).join(', ')}`);
 }
 
 /** Piece sets loaded on this page: [{ id, label, licence }]. Load more with pieces/<name>.js. */
@@ -45,15 +45,15 @@ export function pieceSets() {
 function pieceId(name) {
   const id = PIECE_ALIASES[name] || name;
   const have = pieceSets().map((p) => p.id);
-  if (!have.length) throw new Error('PGN Replay: no piece set loaded. Use pgn-replay.all.js, or add <script src="pieces/classic-staunton.js"> after pgn-replay.js.');
+  if (!have.length) throw new Error('chessmen: no piece set loaded. Use chessmen.all.js, or add <script src="pieces/classic-staunton.js"> after chessmen.js.');
   if (have.includes(id)) return id;
-  if (name && typeof console !== 'undefined') console.warn(`PGN Replay: piece set "${name}" isn't loaded (add pieces/${id}.js); using ${have[0]}.`);
+  if (name && typeof console !== 'undefined') console.warn(`chessmen: piece set "${name}" isn't loaded (add pieces/${id}.js); using ${have[0]}.`);
   return have[0];
 }
 function schemeId(name) {
   if (name && typeof name === 'object') return name;            // custom { light, dark, hlLight, hlDark }
   if (SCHEMES[name]) return name;
-  throw new Error(`PGN Replay: unknown board colours "${name}". Known: ${Object.keys(SCHEMES).join(', ')}`);
+  throw new Error(`chessmen: unknown board colours "${name}". Known: ${Object.keys(SCHEMES).join(', ')}`);
 }
 
 const store = {
@@ -106,7 +106,7 @@ function el(tag, cls, html) {
 }
 
 function button(name, label, onClick) {
-  const b = el('button', 'sb-btn sb-' + name, `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[name]}</svg>`);
+  const b = el('button', 'cm-btn cm-' + name, `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[name]}</svg>`);
   b.type = 'button';
   b.setAttribute('aria-label', label);
   b.title = label;
@@ -127,9 +127,9 @@ const reducedMotion = () => typeof matchMedia !== 'undefined' && matchMedia('(pr
  *   controls    show the button bar (true); picker: show the game menu when there are 2+ games (true)
  *   meta        show players, result and move counter above the board (true)
  *   orientation "white" | "black"
- *   scheme      board colours: an id from PgnReplay.schemes() or { light, dark, hlLight, hlDark }
- *   pieces      piece set id from PgnReplay.pieceSets() ("classic-staunton", "modern-staunton")
- *   pieceColours piece colours from PgnReplay.pieceColours() ("original", ..., "amberSky"), or { light, dark, line? }
+ *   scheme      board colours: an id from Chessmen.schemes() or { light, dark, hlLight, hlDark }
+ *   pieces      piece set id from Chessmen.pieceSets() ("classic-staunton", "modern-staunton")
+ *   pieceColours piece colours from Chessmen.pieceColours() ("original", ..., "amberSky"), or { light, dark, line? }
  *   appearance  show board-colour and piece menus in the bar (false)
  *   remember    localStorage key: keep the visitor's scheme and pieces across visits (off)
  *   theme       any other stage theme overrides (see BOARD_THEME and DEFAULT_THEME)
@@ -140,7 +140,7 @@ export function create(host, opts = {}) {
     controls: true, picker: true, meta: true, orientation: 'white', ...opts,
   };
   let games = toGames(o.fen ? [{ fen: o.fen }] : o.games);
-  if (!games.length) throw new Error('PGN Replay: no games (give it PGN text or a FEN)');
+  if (!games.length) throw new Error('chessmen: no games (give it PGN text or a FEN)');
   // Positions alone have nothing to play through, so they start paused unless autoplay is asked for.
   if (opts.autoplay === undefined && games.every((g) => g.fen)) o.autoplay = false;
 
@@ -149,11 +149,11 @@ export function create(host, opts = {}) {
   let index = Math.min(Math.max(0, o.game | 0), games.length - 1);
   let timer = 0, holdUntil = 0, wantPlay = !!o.autoplay, visible = true;
 
-  host.classList.add('pgn-replay');
+  host.classList.add('chessmen');
   host.innerHTML = '';
-  const meta = o.meta ? el('div', 'sb-meta') : null;
-  const stageEl = el('div', 'sb-stage');
-  const status = el('div', 'sb-sr');
+  const meta = o.meta ? el('div', 'cm-meta') : null;
+  const stageEl = el('div', 'cm-stage');
+  const status = el('div', 'cm-sr');
   status.setAttribute('aria-live', 'polite');
   if (meta) host.appendChild(meta);
   host.appendChild(stageEl);
@@ -181,7 +181,7 @@ export function create(host, opts = {}) {
 
   let playBtn = null, picker = null, schemeMenu = null, pieceMenu = null, colourMenu = null;
   if (o.controls) {
-    const bar = el('div', 'sb-bar');
+    const bar = el('div', 'cm-bar');
     playBtn = button('play', 'Play', () => api.toggle());
     bar.append(
       button('first', 'Start of game', () => { api.pause(); api.first(); }),
@@ -192,7 +192,7 @@ export function create(host, opts = {}) {
       button('flip', 'Flip board', () => api.flip()),
     );
     if (o.picker && games.length > 1) {
-      picker = el('select', 'sb-picker');
+      picker = el('select', 'cm-picker');
       picker.setAttribute('aria-label', 'Choose a game');
       games.forEach((g, i) => picker.add(new Option(label(i), i)));
       picker.addEventListener('change', () => api.load(+picker.value));
@@ -200,18 +200,18 @@ export function create(host, opts = {}) {
     }
     host.appendChild(bar);
     if (o.appearance) {
-      const look2 = el('div', 'sb-bar sb-appearance');
-      schemeMenu = el('select', 'sb-picker');
+      const look2 = el('div', 'cm-bar cm-appearance');
+      schemeMenu = el('select', 'cm-picker');
       schemeMenu.setAttribute('aria-label', 'Board colours');
       schemes().forEach((x) => schemeMenu.add(new Option(x.label, x.id)));
       schemeMenu.value = typeof look.scheme === 'string' ? look.scheme : '';
       schemeMenu.addEventListener('change', () => applyLook({ scheme: schemeMenu.value }));
-      pieceMenu = el('select', 'sb-picker');
+      pieceMenu = el('select', 'cm-picker');
       pieceMenu.setAttribute('aria-label', 'Pieces');
       pieceSets().forEach((x) => pieceMenu.add(new Option(x.label, x.id)));
       pieceMenu.value = look.pieceSet;
       pieceMenu.addEventListener('change', () => applyLook({ pieceSet: pieceMenu.value }));
-      colourMenu = el('select', 'sb-picker');
+      colourMenu = el('select', 'cm-picker');
       colourMenu.setAttribute('aria-label', 'Piece colours');
       pieceColours().forEach((x) => colourMenu.add(new Option(x.label, x.id)));
       colourMenu.value = typeof look.pieceColours === 'string' ? look.pieceColours : '';
@@ -237,11 +237,11 @@ export function create(host, opts = {}) {
     const moveText = rec ? moveLabel(rec) : 'Start';
     if (meta) {
       meta.innerHTML = '';
-      const who = el('b', 'sb-players');
+      const who = el('b', 'cm-players');
       // A bare position (a FEN with no moves) has no players or move count, just the side to move.
       const position = !n && !h.White && !h.Black;
       who.textContent = position ? 'Position' : `${h.White || 'White'} – ${h.Black || 'Black'}`;
-      const info = el('span', 'sb-info');
+      const info = el('span', 'cm-info');
       const toMove = stage.game.startFen.split(' ')[1] === 'b' ? 'Black to move' : 'White to move';
       info.textContent = [h.Opening, n ? `move ${Math.ceil(ply / 2)}/${Math.ceil(n / 2)}` : toMove, ply >= n && h.Result ? h.Result : null]
         .filter(Boolean).join(' · ');
@@ -298,11 +298,11 @@ export function create(host, opts = {}) {
     last() { stage.last(); return api; },
     goto(ply) { stage.goto(ply); return api; },
     flip() { stage.flip(); update(); return api; },
-    /** Board colours: an id from PgnReplay.schemes(), or { light, dark, hlLight, hlDark }. */
+    /** Board colours: an id from Chessmen.schemes(), or { light, dark, hlLight, hlDark }. */
     setScheme(id) { applyLook({ scheme: schemeId(id) }); return api; },
-    /** Piece set: an id from PgnReplay.pieceSets(). */
+    /** Piece set: an id from Chessmen.pieceSets(). */
     setPieces(id) { applyLook({ pieceSet: pieceId(id) }); return api; },
-    /** Piece colours: an id from PgnReplay.pieceColours(), or { light, dark, line? }. */
+    /** Piece colours: an id from Chessmen.pieceColours(), or { light, dark, line? }. */
     setPieceColours(id) { applyLook({ pieceColours: colourId(id) }); return api; },
     get appearance() { return { scheme: look.scheme, pieces: look.pieceSet, pieceColours: look.pieceColours }; },
     setTheme(t) {
@@ -331,7 +331,7 @@ export function create(host, opts = {}) {
     destroy() {
       stop(); io && io.disconnect();
       document.removeEventListener('visibilitychange', onVis);
-      stage.destroy(); host.innerHTML = ''; host.classList.remove('pgn-replay');
+      stage.destroy(); host.innerHTML = ''; host.classList.remove('chessmen');
     },
   };
 
@@ -340,12 +340,12 @@ export function create(host, opts = {}) {
   return api;
 }
 
-/** Mounts every <div data-pgn-replay='{"interval":900}'> on the page. Games come from a child
+/** Mounts every <div data-chessmen='{"interval":900}'> on the page. Games come from a child
  *  <script type="application/x-chess-pgn">, the element's text, or a data-src URL: PGN or a FEN. */
 export function autoInit(scope = document) {
-  return Promise.all([...scope.querySelectorAll('[data-pgn-replay]:not([data-pgn-replay-ready])')].map(async (node) => {
-    node.setAttribute('data-pgn-replay-ready', '');
-    const attr = node.getAttribute('data-pgn-replay');
+  return Promise.all([...scope.querySelectorAll('[data-chessmen]:not([data-chessmen-ready])')].map(async (node) => {
+    node.setAttribute('data-chessmen-ready', '');
+    const attr = node.getAttribute('data-chessmen');
     const opts = attr && attr.trim().startsWith('{') ? JSON.parse(attr) : {};
     const script = node.querySelector('script[type="application/x-chess-pgn"]');
     let pgn = opts.games || (script ? script.textContent : node.textContent);

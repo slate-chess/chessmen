@@ -1,8 +1,8 @@
-# Third-party notices and authorship for PGN Replay
+# Third-party notices and authorship for chessmen
 
 ## Authorship
 
-PGN Replay is Copyright 2026 Linu Alex, licensed under Apache 2.0 (LICENSE, NOTICE). It was written by Linu
+chessmen is Copyright 2026 Linu Alex, licensed under Apache 2.0 (LICENSE, NOTICE). It was written by Linu
 Alex for Slate Chess with AI assistance (Claude). That covers everything in `src/` (the board, the stage and the
 core: board drawing, animation, arrows, variations, themes), `tools/`, `test/`, `demo.html` and `examples/`. The
 board's look follows the Slate Chess app: its colour schemes are the app's values.
@@ -12,11 +12,11 @@ domain; the scores were entered by hand and checked move by move with chess.js, 
 
 No GPL code is used: neither Lichess's GPL/AGPL front end nor its GPL `merida` piece set.
 
-## chess.js (bundled in `dist/pgn-replay*.js` and `.mjs`)
+## chess.js (bundled in `dist/chessmen*.js` and `.mjs`)
 
 The built files bundle **chess.js** 1.4.0 from npm by Jeff Hlywa and contributors (github.com/jhlywa/chess.js), BSD 2-Clause. It
 provides the chess rules: legal moves, check and mate, castling and en passant, reading SAN moves, and the PGN
-parser. PGN Replay uses it to turn a PGN into the positions it replays. BSD 2-Clause requires this notice to be
+parser. chessmen uses it to turn a PGN into the positions it replays. BSD 2-Clause requires this notice to be
 kept with the code; the build also writes it into each bundle as a `/*!` comment:
 
 ```
@@ -80,7 +80,7 @@ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWIS
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### Classic Staunton (`classic-staunton`, also inside `dist/pgn-replay.all.js`): Unlicense
+### Classic Staunton (`classic-staunton`, also inside `dist/chessmen.all.js`): Unlicense
 
 After Chess Mérida by Armando Hernández Marroquín (1998), via the `chess_merida_unicode` project
 (mip.noekeon.org/HTMLTTChess/chess_merida_unicode.html), released under the Unlicense; adapted by Slate Chess for

@@ -2,16 +2,20 @@
 
 ## 0.5.0 (2026-10-18)
 
-- **Renamed to PGN Replay** (`pgn-replay`), from Slate Chessboard. Nothing was ever published under the old name,
-  so there is no deprecated package and no migration path to keep: the names simply change.
-  - Files: `dist/pgn-replay.all.js`, `.js`, `.mjs`, `.css` (were `dist/slate-chessboard.*`).
-  - Global: `PgnReplay` (was `SlateChessboard`); `PgnReplayPieceSets` for early piece-set registration.
-  - No-code embed: `data-pgn-replay` (was `data-slate-chessboard`), and the host class is `.pgn-replay`.
-  - `postMessage` key: `{ pgnReplay: "goto", args: [...] }` (was `slateChessboard`).
-  - Repository: `github.com/slate-chess/pgn-replay`. Demo: `slatechess.com/opensource/pgn-replay-demo.html`,
-    with a redirect from the old demo URL.
-- **Published to npm** as [`pgn-replay`](https://www.npmjs.com/package/pgn-replay): `npm install pgn-replay`.
-  jsDelivr and unpkg serve it from the registry; the `cdn.jsdelivr.net/gh/...` URLs keep working.
+- **Renamed to chessmen**, from Slate Chessboard. Nothing was ever published under the old name, so there is no
+  deprecated package and no migration path to keep: the names simply change.
+  - Files: `dist/chessmen.all.js`, `.js`, `.mjs`, `.css` (were `dist/slate-chessboard.*`).
+  - Global: `Chessmen` (was `SlateChessboard`); `ChessmenPieceSets` for early piece-set registration.
+  - No-code embed: `data-chessmen`; the host class is `.chessmen`.
+  - CSS prefixes: board classes and custom properties are `cm-` / `--cm-*` (were `sb-` / `--sb-*`); the stage's
+    internal classes are `cmb-` (were `scb-`). Restyle any page that targeted the old names.
+  - `postMessage` key: `{ chessmen: "goto", args: [...] }`.
+  - Error messages are prefixed `chessmen:`.
+  - Repository: `github.com/slate-chess/chessmen`. Demo: `slatechess.com/opensource/chessmen/`, with a redirect
+    from the old demo URL.
+- **Published to npm** as [`chessmen`](https://www.npmjs.com/package/chessmen): `npm install chessmen`.
+  jsDelivr and unpkg serve it from the registry.
+- README: a "Safe to depend on" section — pinned immutable CDN bytes, no phoning home, no lock-in.
 
 ## 0.4.0 (2026-10-15)
 

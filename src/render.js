@@ -13,12 +13,12 @@ import { frameOfMove, settled } from './animate.js';
 import { MARK_COLORS } from './theme.js';
 
 // Piece sets: { name, label?, licence?, credit?, pieces: { wK: { viewBox, body }, ... } }. None is built
-// into the core; pieces/<name>.js registers one, and pgn-replay.all.js includes classic-staunton.
+// into the core; pieces/<name>.js registers one, and chessmen.all.js includes classic-staunton.
 const PIECE_SETS = {};
 export function registerPieceSet(set) { PIECE_SETS[set.name] = set; return set; }
 /** Registered sets by name. A piece script that ran before the library left its set in a global. */
 export function pieceSets() {
-  const early = globalThis.PgnReplayPieceSets;
+  const early = globalThis.ChessmenPieceSets;
   if (early) for (const set of Object.values(early)) if (!PIECE_SETS[set.name]) PIECE_SETS[set.name] = set;
   return PIECE_SETS;
 }
@@ -26,7 +26,7 @@ export function pieceSet(name) {
   const set = pieceSets()[name];
   if (!set) {
     const have = Object.keys(PIECE_SETS);
-    throw new Error(`Unknown piece set "${name}". ${have.length ? `Registered: ${have.join(', ')}` : 'None registered: load pieces/classic-staunton.js, or use pgn-replay.all.js'}`);
+    throw new Error(`Unknown piece set "${name}". ${have.length ? `Registered: ${have.join(', ')}` : 'None registered: load pieces/classic-staunton.js, or use chessmen.all.js'}`);
   }
   return set;
 }

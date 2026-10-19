@@ -1,0 +1,34 @@
+/* Copyright 2026 Linu Alex. SPDX-License-Identifier: Apache-2.0. Restyle through the custom properties; the board itself is themed in JS. */
+.chessmen {
+  --cm-text: inherit;
+  --cm-muted: #6b6b72;
+  --cm-btn-bg: rgba(127, 127, 127, .12);
+  --cm-btn-bg-hover: rgba(127, 127, 127, .22);
+  --cm-btn-text: inherit;
+  --cm-focus: #0a84ff;
+  --cm-max-width: 520px;
+  color: var(--cm-text);
+  max-width: var(--cm-max-width);
+  margin: 0 auto;
+}
+@media (prefers-color-scheme: dark) { .chessmen { --cm-muted: #a3a3ab; } }
+
+.chessmen .cm-meta { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline;
+  gap: 2px 12px; margin: 0 2px 8px; font-size: 15px; }
+.chessmen .cm-info { color: var(--cm-muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+.chessmen .cm-stage { border-radius: 6px; outline: none; }
+.chessmen .cm-stage:focus-visible { outline: 2px solid var(--cm-focus); outline-offset: 3px; }
+
+.chessmen .cm-bar { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; margin-top: 10px; }
+.chessmen .cm-btn { all: unset; box-sizing: border-box; cursor: pointer; display: grid; place-items: center;
+  width: 44px; height: 40px; border-radius: 12px; background: var(--cm-btn-bg); color: var(--cm-btn-text);
+  transition: background .15s; }
+.chessmen .cm-btn:hover { background: var(--cm-btn-bg-hover); }
+.chessmen .cm-btn:focus-visible { outline: 2px solid var(--cm-focus); outline-offset: 2px; }
+.chessmen .cm-btn svg { width: 20px; height: 20px; fill: currentColor; }
+.chessmen .cm-play { width: 56px; }
+.chessmen .cm-picker { font: inherit; font-size: 14px; height: 40px; max-width: 100%; padding: 0 10px; border-radius: 12px;
+  border: 0; background: var(--cm-btn-bg); color: var(--cm-btn-text); cursor: pointer; }
+.chessmen .cm-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 420px) { .chessmen .cm-btn { width: 40px; } .chessmen .cm-picker { flex-basis: 100%; } }
+@media (prefers-reduced-motion: reduce) { .chessmen .cm-btn { transition: none; } }

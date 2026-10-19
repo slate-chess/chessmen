@@ -1,10 +1,10 @@
 // Copyright 2026 Linu Alex. SPDX-License-Identifier: Apache-2.0
 // The stage: mounts one animated board into an element and exposes one small API that a
 // page, an LLM-generated artifact, or a parent window (via postMessage) can drive.
-// PgnReplay.create (board.js) builds on it; use it directly as
-// PgnReplay.createStage, or through board.stage.
+// Chessmen.create (board.js) builds on it; use it directly as
+// Chessmen.createStage, or through board.stage.
 //
-//   const stage = PgnReplay.createStage(el, { pgn, controls: true });
+//   const stage = Chessmen.createStage(el, { pgn, controls: true });
 //   stage.goto('9...b5'); stage.setMarks({ arrows: ['f1c4 blue'] });
 //   stage.openVariation({ pgnVariation: '15...Nxd7' }); stage.variationNext();
 import { loadGame, fenAt, plyRecord, findPly, playLine, moveLabel, lastPly } from './game.js';
@@ -23,19 +23,19 @@ const ICONS = {
 };
 
 const STYLE = `
-.scb-stage{position:relative;font-family:ui-rounded,'SF Pro Rounded',system-ui,sans-serif;color:#fff;outline:none}
-.scb-stage svg.scb-stage-view{display:block;width:100%;height:auto}
-.scb-stage-bar{display:flex;gap:10px;justify-content:center;padding:12px 0 2px}
-.scb-stage-bar button{all:unset;cursor:pointer;display:grid;place-items:center;height:44px;min-width:64px;border-radius:22px;background:#2c2c2e;color:#0a84ff;transition:background .15s}
-.scb-stage-bar button:hover{background:#3a3a3c}
-.scb-stage-bar button:focus-visible{outline:2px solid #0a84ff;outline-offset:2px}
-.scb-stage-bar svg{width:22px;height:22px;fill:currentColor}
-@media (prefers-reduced-motion:reduce){.scb-stage-bar button{transition:none}}`;
+.cmb-stage{position:relative;font-family:ui-rounded,'SF Pro Rounded',system-ui,sans-serif;color:#fff;outline:none}
+.cmb-stage svg.cmb-stage-view{display:block;width:100%;height:auto}
+.cmb-stage-bar{display:flex;gap:10px;justify-content:center;padding:12px 0 2px}
+.cmb-stage-bar button{all:unset;cursor:pointer;display:grid;place-items:center;height:44px;min-width:64px;border-radius:22px;background:#2c2c2e;color:#0a84ff;transition:background .15s}
+.cmb-stage-bar button:hover{background:#3a3a3c}
+.cmb-stage-bar button:focus-visible{outline:2px solid #0a84ff;outline-offset:2px}
+.cmb-stage-bar svg{width:22px;height:22px;fill:currentColor}
+@media (prefers-reduced-motion:reduce){.cmb-stage-bar button{transition:none}}`;
 
 function injectStyle() {
-  if (typeof document === 'undefined' || document.getElementById('scb-stage-style')) return;
+  if (typeof document === 'undefined' || document.getElementById('cmb-stage-style')) return;
   const s = document.createElement('style');
-  s.id = 'scb-stage-style';
+  s.id = 'cmb-stage-style';
   s.textContent = STYLE;
   document.head.appendChild(s);
 }
@@ -58,12 +58,12 @@ export function create(el, opts = {}) {
   let raf = 0, auto = 0;
 
   // ---- DOM ----------------------------------------------------------------
-  el.classList.add('scb-stage');
+  el.classList.add('cmb-stage');
   el.tabIndex = el.tabIndex >= 0 ? el.tabIndex : 0;
   el.innerHTML = '';
   const svgNS = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(svgNS, 'svg');
-  svg.setAttribute('class', 'scb-stage-view');
+  svg.setAttribute('class', 'cmb-stage-view');
   svg.setAttribute('role', 'img');
   svg.setAttribute('viewBox', `0 0 ${VIEW_SIZE} ${VIEW_SIZE}`);
   const defs = document.createElementNS(svgNS, 'defs');
@@ -81,7 +81,7 @@ export function create(el, opts = {}) {
   };
   if (opts.controls !== false) {
     const bar = document.createElement('div');
-    bar.className = 'scb-stage-bar';
+    bar.className = 'cmb-stage-bar';
     bar.append(
       button('prev', 'Previous move', () => api.prev()),
       button('play', 'Play', () => api.toggle()),
@@ -236,14 +236,14 @@ export function create(el, opts = {}) {
 /**
  * Let a parent window drive a stage inside an iframe — the shape sandboxed LLM
  * artifacts and embedding hosts can use:
- *   iframe.contentWindow.postMessage({ pgnReplay: 'goto', args: ['14...Nxe4'] }, '*')
+ *   iframe.contentWindow.postMessage({ chessmen: 'goto', args: ['14...Nxe4'] }, '*')
  */
 export function listen(stage, target = typeof window !== 'undefined' ? window : null) {
   if (!target) return;
   target.addEventListener('message', (e) => {
-    const { pgnReplay: method, args = [] } = e.data || {};
+    const { chessmen: method, args = [] } = e.data || {};
     if (!method || typeof stage[method] !== 'function') return;
-    try { stage[method](...args); e.source?.postMessage({ pgnReplay: 'ok', method, state: stage.state }, '*'); }
-    catch (err) { e.source?.postMessage({ pgnReplay: 'error', method, message: err.message }, '*'); }
+    try { stage[method](...args); e.source?.postMessage({ chessmen: 'ok', method, state: stage.state }, '*'); }
+    catch (err) { e.source?.postMessage({ chessmen: 'error', method, message: err.message }, '*'); }
   });
 }

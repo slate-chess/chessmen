@@ -1,41 +1,48 @@
 {
-  "name": "pgn-replay",
+  "name": "chessmen",
   "version": "0.5.0",
-  "description": "Embed a PGN replay on any web page: one script tag, zero dependencies. Animated moves, arrows, variations, FEN diagrams and 20 board themes. A chess PGN viewer and chessboard that needs no build step. LLM-friendly (llms.txt).",
-  "homepage": "https://slatechess.com/opensource/pgn-replay-demo.html",
+  "description": "Chessboard for the web: replay PGN games, show FEN diagrams, with animated moves, arrows and variations. One script tag, no dependencies, no build step.",
+  "homepage": "https://slatechess.com/opensource/chessmen/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/slate-chess/pgn-replay.git"
+    "url": "git+https://github.com/slate-chess/chessmen.git"
   },
   "bugs": {
-    "url": "https://github.com/slate-chess/pgn-replay/issues"
+    "url": "https://github.com/slate-chess/chessmen/issues"
   },
   "keywords": [
-    "pgn",
-    "pgn-replay",
-    "pgn-viewer",
     "chess",
     "chessboard",
     "chess-board",
+    "chess-pieces",
+    "chessmen",
+    "pgn",
+    "pgn-viewer",
+    "pgn-parser",
+    "replay",
     "fen",
     "diagram",
-    "replay",
+    "chess-game",
+    "board",
+    "svg",
     "animation",
     "variations",
-    "svg"
+    "widget",
+    "embed",
+    "zero-dependency"
   ],
   "type": "module",
-  "main": "dist/pgn-replay.mjs",
-  "module": "dist/pgn-replay.mjs",
-  "browser": "dist/pgn-replay.js",
+  "main": "dist/chessmen.mjs",
+  "module": "dist/chessmen.mjs",
+  "browser": "dist/chessmen.js",
   "exports": {
     ".": {
-      "import": "./dist/pgn-replay.mjs",
-      "default": "./dist/pgn-replay.js"
+      "import": "./dist/chessmen.mjs",
+      "default": "./dist/chessmen.js"
     },
     "./src": "./src/index.js",
-    "./all": "./dist/pgn-replay.all.js",
-    "./pgn-replay.css": "./dist/pgn-replay.css",
+    "./all": "./dist/chessmen.all.js",
+    "./chessmen.css": "./dist/chessmen.css",
     "./pieces/*": "./dist/pieces/*"
   },
   "files": [

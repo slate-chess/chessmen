@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PGN Replay demo</title>
+<title>chessmen demo</title>
 <style>
   :root { --bg: #fbfaf7; --text: #1d1d1f; --muted: #5f5f66; --line: #e4e0d8; }
   @media (prefers-color-scheme: dark) { :root { --bg: #111113; --text: #f2f2f4; --muted: #a3a3ab; --line: #2e2e33; } }
@@ -16,27 +16,27 @@
 </head>
 <body>
 <main>
-  <h1>PGN Replay 0.5.0</h1>
+  <h1>chessmen 0.5.0</h1>
   <p>Serve this folder over http (for example <code>python3 -m http.server</code>) so <code>data-src</code> can load the PGN.</p>
   <div class="grid">
-    <section><h2>Default</h2><code>PgnReplay.create(el, { games })</code><div id="a"></div></section>
+    <section><h2>Default</h2><code>Chessmen.create(el, { games })</code><div id="a"></div></section>
     <section><h2>Modern Staunton on Navy, black at the bottom, appearance menus</h2><code>scheme: "navy", pieces: "modern-staunton", appearance: true</code><div id="b"></div></section>
     <section><h2>No controls (hero style)</h2><code>controls: false, meta: false</code><div id="c"></div></section>
-    <section><h2>Auto-mounted</h2><code>&lt;div data-pgn-replay data-src="games/showcase.pgn"&gt;</code>
-      <div data-pgn-replay='{"autoplay": false}' data-src="games/showcase.pgn"></div></section>
+    <section><h2>Auto-mounted</h2><code>&lt;div data-chessmen data-src="games/showcase.pgn"&gt;</code>
+      <div data-chessmen='{"autoplay": false}' data-src="games/showcase.pgn"></div></section>
     <section><h2>A position from a FEN</h2><code>fen: "…"</code><div id="e"></div></section>
     <section><h2>Arrows and a side variation</h2><code>b.stage.setMarks(…), b.stage.openVariation(…)</code><div id="d"></div></section>
   </div>
 </main>
-<script src="dist/pgn-replay.all.js"></script>
+<script src="dist/chessmen.all.js"></script>
 <script src="dist/pieces/modern-staunton.js"></script>
 <script>
 fetch("games/showcase.pgn").then(r => r.text()).then(games => {
-  PgnReplay.create(document.getElementById("a"), { games });
-  PgnReplay.create(document.getElementById("b"), { games, orientation: "black", scheme: "navy", pieces: "modern-staunton", appearance: true });
-  PgnReplay.create(document.getElementById("c"), { games, controls: false, meta: false, interval: 700 });
-  PgnReplay.create(document.getElementById("e"), { fen: "r1bk3r/p2pBpNp/n4n2/1p1NP2P/6P1/3P4/P1P1K3/q5b1 b - - 1 23", scheme: "navy", pieces: "modern-staunton" });
-  const d = PgnReplay.create(document.getElementById("d"), { games, autoplay: false, game: 1 });
+  Chessmen.create(document.getElementById("a"), { games });
+  Chessmen.create(document.getElementById("b"), { games, orientation: "black", scheme: "navy", pieces: "modern-staunton", appearance: true });
+  Chessmen.create(document.getElementById("c"), { games, controls: false, meta: false, interval: 700 });
+  Chessmen.create(document.getElementById("e"), { fen: "r1bk3r/p2pBpNp/n4n2/1p1NP2P/6P1/3P4/P1P1K3/q5b1 b - - 1 23", scheme: "navy", pieces: "modern-staunton" });
+  const d = Chessmen.create(document.getElementById("d"), { games, autoplay: false, game: 1 });
   d.goto("16.Nc3");                                   // the Immortal Game
   d.stage.setMarks({ arrows: ["c3d5 green"], circles: ["d5 red"] });
   d.stage.openVariation({ after: "16.Nc3", moves: ["Bb7", "Nd5"], label: "If 16...Bb7" });

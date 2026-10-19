@@ -73,7 +73,7 @@ export const MARK_COLORS = {
 
 export const DEFAULT_THEME = {
   scheme: 'mahogany',
-  pieceSet: 'classic-staunton', // registered by pieces/classic-staunton.js (built into pgn-replay.all.js)
+  pieceSet: 'classic-staunton', // registered by pieces/classic-staunton.js (built into chessmen.all.js)
   pieceColours: 'original',   // a PIECE_COLOURS id, or { light, dark, line? }
   coordinates: 'inside',      // 'inside' | 'outside' | 'none'
   lastMove: 'arrow',          // 'arrow' | 'highlight' | 'both' | 'none'

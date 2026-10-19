@@ -1,5 +1,5 @@
 // Copyright 2026 Linu Alex. SPDX-License-Identifier: Apache-2.0
-// PGN Replay, as an ES module: the replay board (create, autoInit), the stage under it
+// chessmen, as an ES module: the replay board (create, autoInit), the stage under it
 // (createStage, listen), and the pure core it draws with (game model, themes, marks, SVG
 // rendering, animation). Importing it has no side effects; nothing mounts on its own.
 export { VERSION as version, create, autoInit, splitPGN, isFEN, toGames, schemes, pieceSets, pieceColours, BOARD_THEME } from './board.js';

@@ -1,16 +1,16 @@
-# PGN Replay
+# chessmen
 
-> Embed a PGN replay on any web page: one script tag, zero dependencies. Give it a PGN and it replays the game (or a FEN and it shows the position), with animated moves, a last-move arrow, controls, a game picker, arrows and circles, side boards for variations, 20 board themes and Staunton pieces. No build step. Renders SVG. Move parsing and legality come from chess.js, bundled in. By the makers of Slate Chess, the personal chess coach for Apple devices.
+> The chessboard for the web: replay PGN games or show a FEN position on any page. One script tag, zero dependencies, no build step. Animated moves, a last-move arrow, controls, a game picker, arrows and circles, side boards for variations, 20 board themes and two Staunton piece sets. Renders SVG. Move parsing and legality come from chess.js, bundled in. By the makers of Slate Chess, the personal chess coach for Apple devices.
 
-One script tag is enough: `dist/pgn-replay.all.js` holds the board, its stylesheet and the Classic Staunton pieces. Load it from a copy on your site, or from the CDN: `https://cdn.jsdelivr.net/npm/pgn-replay@0.5.0/dist/pgn-replay.all.js`. Each board needs a container element and a PGN (one or more games).
+One script tag is enough: `dist/chessmen.all.js` holds the board, its stylesheet and the Classic Staunton pieces. Load it from a copy on your site, or from the CDN: `https://cdn.jsdelivr.net/npm/chessmen@0.5.0/dist/chessmen.all.js`. Each board needs a container element and a PGN (one or more games).
 
 Minimal page:
 
 ```html
 <div id="board"></div>
-<script src="pgn-replay/dist/pgn-replay.all.js"></script>
+<script src="chessmen/dist/chessmen.all.js"></script>
 <script>
-  PgnReplay.create(document.getElementById("board"), {
+  Chessmen.create(document.getElementById("board"), {
     games: '[White "Morphy"]\n[Black "Duke Karl / Count Isouard"]\n[Result "1-0"]\n\n1. e4 e5 2. Nf3 d6 3. d4 Bg4 4. dxe5 Bxf3 5. Qxf3 dxe5 6. Bc4 Nf6 7. Qb3 Qe7 8. Nc3 c6 9. Bg5 b5 10. Nxb5 cxb5 11. Bxb5+ Nbd7 12. O-O-O Rd8 13. Rxd7 Rxd7 14. Rd1 Qe6 15. Bxd7+ Nxd7 16. Qb8+ Nxb8 17. Rd8# 1-0'
   });
 </script>
@@ -19,25 +19,25 @@ Minimal page:
 No code at all:
 
 ```html
-<div data-pgn-replay='{"autoplay":false}'><script type="application/x-chess-pgn">1. e4 e5 2. Nf3 Nc6</script></div>
-<script src="pgn-replay/dist/pgn-replay.all.js"></script>
+<div data-chessmen='{"autoplay":false}'><script type="application/x-chess-pgn">1. e4 e5 2. Nf3 Nc6</script></div>
+<script src="chessmen/dist/chessmen.all.js"></script>
 ```
 
 Rules that avoid common mistakes:
 - Moves come as PGN or SAN text ("1. e4 e5 2. Nf3"), not coordinates like "e2e4".
-- A single position: `PgnReplay.create(el, { fen: "<FEN>" })`. `games` also accepts a FEN string, and so does the no-code embed. A placement-only FEN means White to move.
+- A single position: `Chessmen.create(el, { fen: "<FEN>" })`. `games` also accepts a FEN string, and so does the no-code embed. A placement-only FEN means White to move.
 - Several games in one string must be separated by a blank line before each `[Event` header block.
 - `scheme` is one of: mahogany (default), classic, teal, green, blue, cyan, red, oak, walnut, carrara, slate, midnight, sage, mustard, terracotta, blackWhite, ember, espresso, graphite, navy.
 - `pieceColours` is one of: original (default), ivoryGraphite, pearlSlate, champagneSteel, ivoryEspresso, blushBurgundy, creamCocoa, pistachioLagoon, sandClaret, porcelainNavy, parchmentMoss, amberSky. With a dark scheme (navy, graphite, espresso, ember, midnight) always use "amberSky", or black pieces disappear.
-- `pieces` is "classic-staunton" (default, inside the .all.js file) or "modern-staunton", which needs one more tag after the first: `<script src="pgn-replay/dist/pieces/modern-staunton.js"></script>`.
+- `pieces` is "classic-staunton" (default, inside the .all.js file) or "modern-staunton", which needs one more tag after the first: `<script src="chessmen/dist/pieces/modern-staunton.js"></script>`.
 - For arrows, circles and variations use `board.stage` (see the annotate example). Arrow syntax: "e2e4 green"; circle: "d7 red".
-- There is no `ChessStage` global; everything is on `PgnReplay` (`PgnReplay.createStage` is the bare stage).
+- There is no `ChessStage` global; everything is on `Chessmen` (`Chessmen.createStage` is the bare stage).
 
-Separate files, if you'd rather choose: `dist/pgn-replay.css` + `dist/pgn-replay.js` + at least one `dist/pieces/<name>.js`. As an ES module: `import { create, registerPieceSet } from "pgn-replay"` and `import classic from "pgn-replay/pieces/classic-staunton.mjs"`, then `registerPieceSet(classic)` and add the CSS file yourself.
+Separate files, if you'd rather choose: `dist/chessmen.css` + `dist/chessmen.js` + at least one `dist/pieces/<name>.js`. As an ES module: `import { create, registerPieceSet } from "chessmen"` and `import classic from "chessmen/pieces/classic-staunton.mjs"`, then `registerPieceSet(classic)` and add the CSS file yourself.
 
 ## Docs
 
-- [Live demo and playground](https://slatechess.com/opensource/pgn-replay-demo.html): every option live, with copyable code
+- [Live demo and playground](https://slatechess.com/opensource/chessmen-demo.html): every option live, with copyable code
 
 - [README](README.md): every option, method, event, colour scheme and piece set
 - [NOTICE](THIRD-PARTY-NOTICES.md): licences (chess.js BSD-2, piece sets)
@@ -51,7 +51,7 @@ Separate files, if you'd rather choose: `dist/pgn-replay.css` + `dist/pgn-replay
 
 ## License
 
-Apache License 2.0, Copyright 2026 Linu Alex. Commercial use, modification and redistribution are permitted. Anyone redistributing the library or a derivative work must include a copy of the License, mark modified files, retain the copyright and attribution notices, and include the attribution notices from the NOTICE file (Section 4). The License grants no rights to the names "Slate Chess" or "PGN Replay" beyond describing the origin of the work (Section 6).
+Apache License 2.0, Copyright 2026 Linu Alex. Commercial use, modification and redistribution are permitted. Anyone redistributing the library or a derivative work must include a copy of the License, mark modified files, retain the copyright and attribution notices, and include the attribution notices from the NOTICE file (Section 4). The License grants no rights to the names "Slate Chess" or "chessmen" beyond describing the origin of the work (Section 6).
 
 ## Optional
 
