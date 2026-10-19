@@ -68,7 +68,7 @@
   ],
   "scripts": {
     "build": "node tools/build.mjs",
-    "test": "node tools/build.mjs && node --test",
+    "test": "node tools/build.mjs && node --test test/*.test.js",
     "types": "tsc -p types/tsconfig.json",
     "prepublishOnly": "npm test",
     "pieces": "python3 tools/build_pieces.py",
