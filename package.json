@@ -59,6 +59,7 @@
   "scripts": {
     "build": "node tools/build.mjs",
     "test": "node tools/build.mjs && node --test",
+    "prepublishOnly": "npm test",
     "pieces": "python3 tools/build_pieces.py",
     "copy": "node tools/copy-dist.mjs",
     "readme-image": "node tools/readme-image.mjs"
