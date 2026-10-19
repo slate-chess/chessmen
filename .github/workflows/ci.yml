@@ -34,6 +34,23 @@ jobs:
             exit 1
           }
 
+  types:
+    name: Type definitions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      # types/sample.ts uses the whole public surface, so this fails if the
+      # hand-written types/index.d.ts drifts from src/.
+      - run: npm run types
+
   dead-names:
     name: No dead names
     runs-on: ubuntu-latest

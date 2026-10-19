@@ -1,5 +1,19 @@
 # PGN Replay changelog
 
+## Unreleased
+
+- **TypeScript definitions** for the whole public surface, shipped as `types/index.d.ts` and wired up through
+  `"types"` in `package.json` and the `exports` map (including `chessmen/pieces/<name>.mjs`). Hand-written, with
+  no TypeScript in the library itself; `npm run types` checks them against `types/sample.ts` in CI.
+- API audit of the README against `src/`: corrected the two bundle sizes in the Files table, documented
+  `b.setTheme()`, `b.version`, the `"Position N"` picker label, that `appearance` needs `controls`, that `pieces`
+  throws when no set is loaded at all, `setMarks`'s board argument and the full `createStage` option list, and
+  added `--cm-text` to the custom-property list. No runtime behaviour changed.
+- Tests: 16 → 53. The board and stage are now mounted in a minimal DOM (`test/dom.js`, no new dependency) to
+  cover `create()`'s options, autoplay semantics (interval, end pause, loop, reduced motion, hidden tab, off
+  screen), the controls, the keyboard, the events, the appearance menus, the `remember` round-trip, `autoInit`
+  and `listen`, plus edge cases for `splitPGN`, `isFEN`, `toGames`, `findPly` and the theme fallbacks.
+
 ## 0.5.0 (2026-10-18)
 
 - **Renamed to chessmen**, from Slate Chessboard. Nothing was ever published under the old name, so there is no
