@@ -33,21 +33,31 @@
   ],
   "type": "module",
   "main": "dist/chessmen.mjs",
+  "types": "./types/index.d.ts",
   "module": "dist/chessmen.mjs",
   "browser": "dist/chessmen.js",
   "exports": {
     ".": {
+      "types": "./types/index.d.ts",
       "import": "./dist/chessmen.mjs",
       "default": "./dist/chessmen.js"
     },
-    "./src": "./src/index.js",
+    "./src": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    },
     "./all": "./dist/chessmen.all.js",
     "./chessmen.css": "./dist/chessmen.css",
-    "./pieces/*": "./dist/pieces/*"
+    "./pieces/*": {
+      "types": "./types/pieces.d.ts",
+      "default": "./dist/pieces/*"
+    }
   },
   "files": [
     "dist/",
     "src/",
+    "types/index.d.ts",
+    "types/pieces.d.ts",
     "llms.txt",
     "README.md",
     "CHANGELOG.md",
@@ -59,6 +69,7 @@
   "scripts": {
     "build": "node tools/build.mjs",
     "test": "node tools/build.mjs && node --test",
+    "types": "tsc -p types/tsconfig.json",
     "prepublishOnly": "npm test",
     "pieces": "python3 tools/build_pieces.py",
     "copy": "node tools/copy-dist.mjs",
@@ -68,7 +79,8 @@
     "chess.js": "1.4.0"
   },
   "devDependencies": {
-    "esbuild": "0.28.2"
+    "esbuild": "0.28.2",
+    "typescript": "5.9.2"
   },
   "author": "Turtle Leap LLC (https://slatechess.com)",
   "license": "Apache-2.0"

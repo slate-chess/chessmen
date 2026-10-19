@@ -173,3 +173,125 @@ test('FEN input: isFEN and toGames tell positions from PGN', () => {
   assert.equal(SC.fenAt(g, 0), fen);
   assert.throws(() => SC.loadGame(SC.toGames('8/8/8/8/8/8/8/9')[0] ?? { fen: 'bad' }));
 });
+
+// ---- edges ----------------------------------------------------------------
+
+test('splitPGN: only a blank line before a tag pair splits games', () => {
+  assert.deepEqual(SC.splitPGN('   \n\n  \n '), []);
+  // No tag pair after the blank line, so it is one game with a gap in the movetext.
+  assert.deepEqual(SC.splitPGN('1. e4\n\n1. d4'), ['1. e4\n\n1. d4']);
+  assert.equal(SC.splitPGN('[Event "a"]\n\n1. e4\n\n2. d4 *').length, 1);
+  assert.equal(SC.splitPGN('[Event "a"]\n\n1. e4\n\n\n\n[Event "b"]\n\n1. d4').length, 2);
+  assert.equal(SC.splitPGN('\n\n[Event "a"]\n\n1. e4\n').length, 1, 'leading blank lines');
+  assert.equal(SC.splitPGN('[Event "a"]\r\n\r\n1. e4\r\n\r\n[Event "b"]\r\n\r\n1. d4').length, 2);
+  assert.deepEqual(SC.splitPGN('  1. e4  '), ['1. e4'], 'each game is trimmed');
+});
+
+test('isFEN wants all eight ranks, and never throws on odd input', () => {
+  assert.ok(SC.isFEN(SC.START_FEN));
+  assert.ok(SC.isFEN('  8/8/8/8/8/8/8/K6k  '), 'trimmed first');
+  assert.ok(SC.isFEN('8/8/8/8/8/8/8/K6k w - - 0 1'));
+  assert.ok(!SC.isFEN('8/8/8/8/8/8/K6k'), 'seven ranks');
+  assert.ok(!SC.isFEN('8/8/8/8/8/8/8/K6k/8'), 'nine ranks');
+  assert.ok(!SC.isFEN('9/9/9/9/9/9/9/9'), '9 is not a run length');
+  assert.ok(!SC.isFEN('8/8/8/8/8/8/8/K6kw - - 0 1'), 'the side to move needs a space');
+  assert.ok(!SC.isFEN(''));
+  assert.ok(!SC.isFEN('1. e4 e5 2. Nf3'));
+  assert.ok(!SC.isFEN('[Event "x"]\n\n1. e4'));
+  for (const odd of [undefined, null, 0, 12345678, {}, []]) assert.ok(!SC.isFEN(odd), String(odd));
+});
+
+test('toGames: empty input, placement-only FENs, labels and arrays', () => {
+  for (const empty of [undefined, null, '', '   ', []]) assert.deepEqual(SC.toGames(empty), [], String(empty));
+  // A placement-only FEN gains White to move; a full one is only trimmed.
+  assert.deepEqual(SC.toGames([{ fen: '8/8/8/8/8/8/8/K6k', label: 'K' }]), [{ fen: '8/8/8/8/8/8/8/K6k w - - 0 1', label: 'K' }]);
+  assert.deepEqual(SC.toGames(' 8/8/8/8/8/8/8/K6k b - - 4 9 '), [{ fen: '8/8/8/8/8/8/8/K6k b - - 4 9' }]);
+  const entry = { pgn: '1. e4', label: 'x' };
+  assert.deepEqual(SC.toGames([entry]), [entry], 'a PGN entry passes through');
+  assert.deepEqual(SC.toGames(SC.START_FEN), [{ fen: SC.START_FEN }]);
+  assert.deepEqual(SC.toGames('[Event "a"]\n\n1. e4\n\n[Event "b"]\n\n1. d4').map((g) => g.pgn.slice(0, 11)), ['[Event "a"]', '[Event "b"]']);
+  // Inside an array each item is one game: a multi-game string is left whole.
+  assert.equal(SC.toGames(['[Event "a"]\n\n1. e4\n\n[Event "b"]\n\n1. d4']).length, 1);
+  // Every result is something loadGame accepts.
+  for (const g of SC.toGames([SC.START_FEN, '1. e4 e5', { fen: '8/8/8/8/8/8/8/K6k' }])) assert.ok(SC.loadGame(g).startFen);
+});
+
+test('findPly and fenAt at the edges of a game', () => {
+  const g = SC.loadGame('1. e4 e5 2. Nf3 Nc6 *');
+  assert.equal(SC.fenAt(g, 0), SC.START_FEN);
+  assert.equal(SC.fenAt(g, -5), SC.START_FEN, 'before the start');
+  assert.equal(SC.fenAt(g, 99), SC.fenAt(g, 4), 'past the end is the last position');
+  assert.equal(SC.plyRecord(g, 99), null);
+  assert.equal(SC.findPly(g, 3), 3, 'a number passes through');
+  assert.equal(SC.findPly(g, '3'), 3);
+  assert.equal(SC.findPly(g, '2.Nf3'), 3);
+  assert.equal(SC.findPly(g, '2...Nc6'), 4);
+  assert.equal(SC.findPly(g, 'Nf3'), 3, 'a unique SAN needs no number');
+  assert.throws(() => SC.findPly(g, '9.Qh5'), /No ply 9\.Qh5/);
+  assert.throws(() => SC.findPly(g, 'Qh5'), /matches 0 moves/);
+  const twice = SC.loadGame('1. Nf3 Nf6 2. Ng1 Ng8 3. Nf3 Nf6 *');
+  assert.throws(() => SC.findPly(twice, 'Nf3'), /matches 2 moves; add the move number/);
+  assert.equal(SC.findPly(twice, '3.Nf3'), 5);
+  // A game that starts from a black-to-move FEN numbers its first ply 2.
+  const black = SC.loadGame({ pgn: '[FEN "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1"]\n\n1... e5 *' });
+  assert.equal(black.plies[0].ply, 2);
+  assert.equal(SC.moveLabel(black.plies[0]), '1...e5');
+});
+
+test('resolveTheme fills the gaps without touching the defaults', () => {
+  const t = SC.resolveTheme();
+  assert.equal(t.scheme, 'mahogany');
+  assert.equal(t.colors, SC.SCHEMES.mahogany);
+  assert.equal(t.tint, null, 'original keeps the artwork colours');
+  assert.deepEqual(
+    [t.coordinates, t.lastMove, t.frame, t.pieceScale, t.moveDuration, t.pieceSet],
+    ['inside', 'arrow', true, 0.9, 0.42, 'classic-staunton'],
+    'the defaults the README documents',
+  );
+  const over = SC.resolveTheme({ scheme: 'navy', frame: false, moveDuration: 0.1 });
+  assert.equal(over.colors.light, SC.SCHEMES.navy.light);
+  assert.equal(over.coordinates, 'inside', 'keys left out keep their default');
+  // undefined means "not specified", not "clear the default"
+  assert.equal(SC.resolveTheme({ scheme: undefined, frame: undefined }).frame, true);
+  assert.equal(SC.DEFAULT_THEME.colors, undefined, 'DEFAULT_THEME is not mutated');
+  assert.equal(SC.DEFAULT_THEME.frame, true);
+  // Re-resolving a resolved theme (what stage.setTheme does) picks up the new scheme.
+  const again = SC.resolveTheme({ ...over, scheme: 'green', colors: undefined, tint: undefined });
+  assert.equal(again.colors, SC.SCHEMES.green);
+  assert.equal(again.frame, false, 'and keeps the rest of the theme');
+  // Custom scheme and tint objects are used as given.
+  const custom = { light: '#fff', dark: '#000', hlLight: ['#888', 0.5], hlDark: ['#888', 0.6] };
+  assert.equal(SC.resolveTheme({ scheme: custom }).colors, custom);
+  assert.deepEqual(SC.resolveTheme({ pieceColours: { light: '#1', dark: '#2' } }).tint, { light: '#1', dark: '#2' });
+  assert.throws(() => SC.resolveTheme({ scheme: 'bogus' }), /Unknown colour scheme "bogus"\. Known: mahogany/);
+  assert.throws(() => SC.resolveTheme({ pieceColours: 'bogus' }), /Unknown piece colours "bogus"/);
+});
+
+test('every scheme has a usable highlight pair, and every mark colour is a hex', () => {
+  for (const id of Object.keys(SC.SCHEMES)) {
+    const c = SC.resolveTheme({ scheme: id }).colors;
+    for (const k of ['hlLight', 'hlDark']) {
+      assert.match(c[k][0], /^#[0-9a-f]{6}$/i, `${id}.${k}`);
+      assert.ok(c[k][1] > 0 && c[k][1] <= 1, `${id}.${k} opacity`);
+    }
+  }
+  for (const [name, hex] of Object.entries(SC.MARK_COLORS)) assert.match(hex, /^#[0-9a-f]{6}$/i, name);
+});
+
+test('the theme decides whether the last move is an arrow, a highlight or neither', () => {
+  SC.registerPieceSet(classic);
+  const g = SC.loadGame('1. e4');
+  const draw = (lastMove) => SC.boardSVG({ fen: SC.fenAt(g, 1), lastMove: SC.plyRecord(g, 1) },
+    SC.resolveTheme({ lastMove, pieceSet: 'classic-staunton' }), { size: 400, idp: 't' });
+  const arrowFill = `fill="${SC.MARK_COLORS.green}"`;
+  const hl = SC.SCHEMES.mahogany.hlLight[0];      // e2 and e4 are both light squares
+  assert.ok(draw('arrow').includes(arrowFill) && !draw('arrow').includes(hl));
+  assert.ok(!draw('highlight').includes(arrowFill) && draw('highlight').includes(hl));
+  assert.ok(draw('both').includes(arrowFill) && draw('both').includes(hl));
+  assert.ok(!draw('none').includes(arrowFill) && !draw('none').includes(hl));
+  // Coordinates: inside and outside draw the labels, anything else leaves them out.
+  const coords = (coordinates) => SC.boardSVG({ fen: SC.START_FEN },
+    SC.resolveTheme({ coordinates, pieceSet: 'classic-staunton' }), { size: 400, idp: 't' });
+  for (const on of ['inside', 'outside']) assert.ok(coords(on).includes('>a</text>'), on);
+  assert.ok(!coords('none').includes('>a</text>'));
+});

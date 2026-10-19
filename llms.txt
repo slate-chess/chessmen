@@ -37,10 +37,10 @@ Separate files, if you'd rather choose: `dist/chessmen.css` + `dist/chessmen.js`
 
 ## Docs
 
-- [Live demo and playground](https://slatechess.com/opensource/chessmen-demo.html): every option live, with copyable code
+- [Live demo and playground](https://slatechess.com/opensource/chessmen/): every option live, with copyable code
 
 - [README](README.md): every option, method, event, colour scheme and piece set
-- [NOTICE](THIRD-PARTY-NOTICES.md): licences (chess.js BSD-2, piece sets)
+- [THIRD-PARTY-NOTICES](THIRD-PARTY-NOTICES.md): licences (chess.js BSD-2, piece sets)
 
 ## Examples
 

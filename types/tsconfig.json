@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "target": "es2022",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "lib": ["es2022", "dom"],
+    "types": [],
+    "skipLibCheck": false,
+    "exactOptionalPropertyTypes": false,
+    "noUnusedLocals": true
+  },
+  "files": ["index.d.ts", "pieces.d.ts", "sample.ts"]
+}
