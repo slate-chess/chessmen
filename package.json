@@ -58,7 +58,7 @@
   ],
   "scripts": {
     "build": "node tools/build.mjs",
-    "test": "node tools/build.mjs && node --test 'test/*.test.js'",
+    "test": "node tools/build.mjs && node --test",
     "pieces": "python3 tools/build_pieces.py",
     "copy": "node tools/copy-dist.mjs",
     "readme-image": "node tools/readme-image.mjs"
