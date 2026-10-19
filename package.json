@@ -1,6 +1,6 @@
 {
   "name": "chessmen",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Chessboard for the web: replay PGN games, show FEN diagrams, with animated moves, arrows and variations. One script tag, no dependencies, no build step.",
   "homepage": "https://slatechess.com/opensource/chessmen/",
   "repository": {

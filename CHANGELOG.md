@@ -1,7 +1,18 @@
-# PGN Replay changelog
+# chessmen changelog
 
-## Unreleased
+## 0.5.1 (2026-10-19)
 
+Fixes for three things the README already promised and one piece of stale branding. No API changes.
+
+- **Space now drives the board**, not a second timer. The stage binds the same keys for standalone use, and both
+  handlers were running: Space stepped the game on the stage's own fixed 1100 ms interval while the board's timer
+  was merely paused, so `interval`, `endPause` and `loop` were ignored and the play/pause button never flipped.
+  The board now captures the keyboard on its host element, ahead of the stage, and owns it.
+- **Coming back to a tab no longer resumes a board that is still scrolled out of view.** The two gates were
+  overwriting one another; they are now tracked separately and combined.
+- `autoInit` assigns the board to `node.chessmen` (was `node.slateBoard`, left over from the old name). The
+  property is undocumented; use the value `Chessmen.create` returns.
+- The changelog title no longer carries a name this project never shipped under.
 - **TypeScript definitions** for the whole public surface, shipped as `types/index.d.ts` and wired up through
   `"types"` in `package.json` and the `exports` map (including `chessmen/pieces/<name>.mjs`). Hand-written, with
   no TypeScript in the library itself; `npm run types` checks them against `types/sample.ts` in CI.

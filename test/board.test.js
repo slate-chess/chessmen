@@ -204,6 +204,34 @@ test('autoplay holds still while the tab is hidden or the board is off screen', 
   assert.equal(board.state.ply, 2);
 });
 
+test('returning to the tab does not resume a board that is still scrolled away', (t) => {
+  const { dom, board } = mount(t, { games: SHORT, interval: 100, theme: { moveDuration: 0.001 } });
+  dom.intersect(false);
+  dom.visibility(true);          // tab hidden while the board is off screen
+  dom.visibility(false);         // and back again: the off-screen gate must still hold
+  dom.tick(3);
+  assert.equal(board.state.ply, 0, 'still off screen, so still still');
+  dom.intersect(true);
+  dom.tick();
+  assert.equal(board.state.ply, 1, 'resumes only once it is back on screen');
+});
+
+test('Space drives the board autoplay, honouring interval, not the stage timer', (t) => {
+  const { dom, host, board } = mount(t, { games: SHORT, autoplay: false, interval: 100, theme: { moveDuration: 0.001 } });
+  const stageEl = dom.query(host, '.cm-stage');
+  const play = dom.query(host, '.cm-play');
+
+  dom.key(stageEl, ' ');
+  assert.equal(board.state.playing, true, 'Space starts the board, not just the stage');
+  assert.deepEqual(dom.periods(), [100], 'the board interval, not the stage default of 1100');
+  assert.equal(play.getAttribute('aria-label'), 'Pause', 'the button reflects it');
+
+  dom.key(stageEl, ' ');
+  assert.equal(board.state.playing, false);
+  assert.equal(play.getAttribute('aria-label'), 'Play');
+  assert.equal(dom.timers, 0, 'no stray stage timer left running');
+});
+
 test('play, pause and destroy start and stop the one timer', (t) => {
   const { dom, board } = mount(t, { games: SHORT, autoplay: false });
   assert.equal(dom.timers, 0);

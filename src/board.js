@@ -6,7 +6,7 @@ import { pieceSets as registeredSets } from './render.js';
 import { loadGame, plyRecord, moveLabel, lastPly as gameLastPly } from './game.js';
 import { create as createStage } from './stage.js';
 
-export const VERSION = '0.5.0';
+export const VERSION = '0.5.1';
 
 // The Slate look: the app's default board. Any stage theme key can be overridden per board.
 // pieceSet falls back along PIECE_ORDER to the first set the page has loaded.
@@ -272,15 +272,31 @@ export function create(host, opts = {}) {
   function stop() { if (timer) { clearInterval(timer); timer = 0; holdUntil = 0; update(); } }
 
   // Only animate while on screen and the tab is visible: saves battery and keeps the page calm.
-  let io = null;
+  // The two gates are tracked apart and combined, so coming back to the tab does not resume a
+  // board that is still scrolled out of view.
+  let io = null, onScreen = true;
+  const gate = () => { visible = onScreen && !document.hidden; };
   if (typeof IntersectionObserver !== 'undefined') {
-    io = new IntersectionObserver((es) => { visible = es.some((e) => e.isIntersecting) && !document.hidden; });
+    io = new IntersectionObserver((es) => { onScreen = es.some((e) => e.isIntersecting); gate(); });
     io.observe(host);
   }
-  const onVis = () => { visible = !document.hidden; };
+  const onVis = () => gate();
   document.addEventListener('visibilitychange', onVis);
-  const onKey = (e) => { if (e.key === ' ' || e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'Home' || e.key === 'End') api.pause(); };
-  stageEl.addEventListener('keydown', onKey, true);
+
+  // The board owns the keyboard. The stage binds the same keys for standalone use, so this
+  // listener captures on the host — before the stage's own, which sits on the stage element —
+  // and stops the event there. Space therefore drives the board's autoplay, with its interval,
+  // endPause and loop, rather than the stage's bare timer.
+  const KEYS = { ArrowLeft: 'prev', ArrowRight: 'next', Home: 'first', End: 'last', f: 'flip', ' ': 'toggle' };
+  const onKey = (e) => {
+    const k = KEYS[e.key];
+    if (!k) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (k !== 'toggle' && k !== 'flip') api.pause(); // a manual move stops autoplay; flipping is not a move
+    api[k]();
+  };
+  host.addEventListener('keydown', onKey, true);
   stage.on('ply', () => update()); // fires on every move, from the API, the bar or the keyboard
 
   const api = {
@@ -331,6 +347,7 @@ export function create(host, opts = {}) {
     destroy() {
       stop(); io && io.disconnect();
       document.removeEventListener('visibilitychange', onVis);
+      host.removeEventListener('keydown', onKey, true);
       stage.destroy(); host.innerHTML = ''; host.classList.remove('chessmen');
     },
   };
@@ -350,7 +367,7 @@ export function autoInit(scope = document) {
     const script = node.querySelector('script[type="application/x-chess-pgn"]');
     let pgn = opts.games || (script ? script.textContent : node.textContent);
     if (node.dataset.src) pgn = await (await fetch(node.dataset.src)).text();
-    node.slateBoard = create(node, { ...opts, games: pgn });
-    return node.slateBoard;
+    node.chessmen = create(node, { ...opts, games: pgn });
+    return node.chessmen;
   }));
 }

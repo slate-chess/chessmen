@@ -14,9 +14,14 @@ class DomEvent {
   constructor(type, props = {}) {
     this.type = type;
     this.defaultPrevented = false;
+    this.propagationStopped = false;
     Object.assign(this, props);
   }
   preventDefault() { this.defaultPrevented = true; }
+  /** Both forms stop the remaining phases here; the board relies on a capture listener
+   *  on an ancestor cutting the event off before the stage's own handler at the target. */
+  stopPropagation() { this.propagationStopped = true; }
+  stopImmediatePropagation() { this.propagationStopped = true; }
 }
 
 class Elem {
@@ -99,9 +104,9 @@ class Elem {
     ev.target = this;
     const path = [];
     for (let p = this.parentNode; p; p = p.parentNode) path.unshift(p);
-    for (const node of path) for (const l of [...node.listeners]) if (l.type === ev.type && l.capture) l.fn.call(node, ev);
-    for (const l of [...this.listeners]) if (l.type === ev.type) l.fn.call(this, ev);
-    for (const node of [...path].reverse()) for (const l of [...node.listeners]) if (l.type === ev.type && !l.capture) l.fn.call(node, ev);
+    for (const node of path) for (const l of [...node.listeners]) if (l.type === ev.type && l.capture && !ev.propagationStopped) l.fn.call(node, ev);
+    if (!ev.propagationStopped) for (const l of [...this.listeners]) if (l.type === ev.type) l.fn.call(this, ev);
+    for (const node of [...path].reverse()) for (const l of [...node.listeners]) if (l.type === ev.type && !l.capture && !ev.propagationStopped) l.fn.call(node, ev);
     return !ev.defaultPrevented;
   }
 
