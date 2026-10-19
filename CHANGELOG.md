@@ -1,5 +1,19 @@
 # chessmen changelog
 
+## 0.5.2 (2026-10-19)
+
+Licence compliance for people who serve the files themselves. No code changes.
+
+- **The Modern Staunton pieces now carry their licence inside the file.** BSD-3-Clause asks that the copyright
+  notice, the three conditions and the disclaimer accompany a binary redistribution, and copying `dist/` onto
+  your own site — which the README recommends — is one. The files previously carried only a pointer to
+  `THIRD-PARTY-NOTICES.md`, which does not travel with them. The text is now inlined at build time from that
+  same file, as chess.js's already was, and a test checks the two agree. `pieces/modern-staunton.js` grows by
+  about 1.6 KB; the board bundles are unchanged.
+  Classic Staunton is under the Unlicense, which carries no conditions, so it has nothing to reproduce.
+- README: serving the files yourself makes you a redistributor. Said plainly, with what that asks — keep
+  `NOTICE`, leave the banner comments in place — and a pointer to `npm run copy`, which handles it.
+
 ## 0.5.1 (2026-10-19)
 
 Fixes for three things the README already promised and one piece of stale branding. No API changes.

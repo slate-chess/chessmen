@@ -6,7 +6,7 @@ import { pieceSets as registeredSets } from './render.js';
 import { loadGame, plyRecord, moveLabel, lastPly as gameLastPly } from './game.js';
 import { create as createStage } from './stage.js';
 
-export const VERSION = '0.5.1';
+export const VERSION = '0.5.2';
 
 // The Slate look: the app's default board. Any stage theme key can be overridden per board.
 // pieceSet falls back along PIECE_ORDER to the first set the page has loaded.

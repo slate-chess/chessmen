@@ -47,17 +47,38 @@ await build({ ...common, entryPoints: ['src/all.js'], format: 'iife', globalName
 const css = fs.readFileSync(path.join(root, 'src/chessmen.css'), 'utf8').replace(/^\/\*.*?\*\/\n/s, '');
 fs.writeFileSync(path.join(dist, 'chessmen.css'), banner + '\n' + css);
 
+// A piece set's licence text has to travel with the file itself, not just with the package:
+// the README tells people to copy dist/ onto their own site, and BSD-3-Clause requires the
+// notice, the three conditions and the disclaimer to accompany a binary redistribution. So it
+// is inlined here, the same way chess.js's is above. THIRD-PARTY-NOTICES.md remains the single
+// source — a test checks the two still agree. A licence with no conditions (the Unlicense, for
+// Classic Staunton) has no block to carry and gets none.
+const notices = fs.readFileSync(path.join(root, 'THIRD-PARTY-NOTICES.md'), 'utf8');
+function licenceText(name) {
+  const heading = notices.search(new RegExp(`^###.*\`${name}\`.*$`, 'm'));
+  if (heading < 0) return null;
+  const nextHeading = notices.indexOf('\n### ', heading + 1);
+  const fence = notices.indexOf('```', heading);
+  if (fence < 0 || (nextHeading >= 0 && fence > nextHeading)) return null;
+  return notices.slice(fence + 3, notices.indexOf('```', fence + 3)).trim();
+}
+
 for (const f of fs.readdirSync(path.join(root, 'src/pieces')).filter((f) => f.endsWith('.js'))) {
   const name = f.replace(/\.js$/, '');
+  const licence = (fs.readFileSync(path.join(root, 'src/pieces', f), 'utf8').match(/"licence":\s*"([^"]+)"/) || [])[1];
+  const text = licenceText(name);
+  const pieceBanner = text
+    ? { js: `/*! chessmen piece set "${name}": ${licence}. Keep this notice with any copy of this file.\n${text}\n*/` }
+    : undefined;
   // Loaded after the library it registers at once; loaded before, the library picks it up from the global.
   await build({
-    ...common, banner: undefined, format: 'iife', outfile: `dist/pieces/${name}.js`,
+    ...common, banner: pieceBanner, format: 'iife', outfile: `dist/pieces/${name}.js`,
     stdin: {
       contents: `import set from './src/pieces/${f}';\nconst S = globalThis.Chessmen;\nif (S && S.registerPieceSet) S.registerPieceSet(set);\n(globalThis.ChessmenPieceSets ||= {})[set.name] = set;`,
       resolveDir: root, loader: 'js',
     },
   });
-  await build({ ...common, banner: undefined, entryPoints: [`src/pieces/${f}`], format: 'esm', outfile: `dist/pieces/${name}.mjs` });
+  await build({ ...common, banner: pieceBanner, entryPoints: [`src/pieces/${f}`], format: 'esm', outfile: `dist/pieces/${name}.mjs` });
 }
 
 for (const f of fs.readdirSync(dist, { recursive: true }).filter((f) => /\.(m?js|css)$/.test(f)).sort()) {

@@ -29,8 +29,8 @@ By the makers of [Slate Chess](https://slatechess.com) — the personal chess co
   can't break your embeds.
 - **No phoning home.** No analytics, no telemetry, no third-party calls. The one request chessmen can make is
   fetching a PGN from a URL *you* point it at with `data-src` — your URL, your server. Nothing else leaves the page.
-- **No lock-in.** Apache 2.0. Vendor the `dist/` folder and serve it yourself any time; the GitHub repo is the
-  permanent fallback.
+- **No lock-in.** Apache 2.0. Vendor the `dist/` folder and serve it yourself any time, keeping `NOTICE` and the
+  banner comments with it; the GitHub repo is the permanent fallback.
 
 <p align="center">
   <a href="https://slatechess.com/opensource/chessmen/"><img src="docs/opera-game.svg" width="360" alt="The Opera Game after 16.Qb8+: Classic Staunton pieces on the Mahogany board, with a green last-move arrow, a blue arrow from d1 to d8 and a red circle on d8"></a>
@@ -57,6 +57,12 @@ By the makers of [Slate Chess](https://slatechess.com) — the personal chess co
 That one file holds the board, its stylesheet and the Classic Staunton pieces. To serve it yourself, copy
 `dist/` into your site and point the `src` at `dist/chessmen.all.js`. To offer Modern Staunton as well,
 add `<script src="…/dist/pieces/modern-staunton.js"></script>` after it.
+
+Serving the files yourself makes you a redistributor, which asks little but not nothing: keep `NOTICE` beside
+them (Apache 2.0, section 4(d)), and leave the `/*! … */` comment at the top of each file alone — that is where
+the bundled licences live, chess.js's inside the board and Burnett's inside `pieces/modern-staunton.js`.
+`npm run copy -- <dir>` does the right thing for you, bringing `LICENSE`, `NOTICE` and `THIRD-PARTY-NOTICES.md`
+along with the code.
 
 Or with no script of your own:
 

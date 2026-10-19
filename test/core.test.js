@@ -132,6 +132,22 @@ test('dist has no companion set and keeps the licence notices', () => {
       assert.ok(text.includes('THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS'), `${f} keeps the chess.js disclaimer`);
     }
   }
+  // A copied dist/ is a redistribution on its own: BSD-3-Clause wants the notice, the three
+  // conditions and the disclaimer in the file, not a pointer to a document left behind.
+  const notices = read('THIRD-PARTY-NOTICES.md');
+  const bsd = notices.slice(notices.indexOf('Copyright (c) 2006, Colin M. L. Burnett'));
+  const clause3 = bsd.slice(0, bsd.indexOf('```')).match(/3\. Neither the name[^\n]*/)[0];
+  for (const f of ['pieces/modern-staunton.js', 'pieces/modern-staunton.mjs']) {
+    const text = read(path.join('dist', f));
+    assert.ok(text.includes('Copyright (c) 2006, Colin M. L. Burnett'), `${f} keeps the Burnett notice`);
+    assert.ok(text.includes('Redistribution and use in source and binary forms'), `${f} keeps the conditions`);
+    assert.ok(text.includes(clause3), `${f} keeps the non-endorsement clause, verbatim from the notices file`);
+    assert.ok(text.includes('THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS'), `${f} keeps the disclaimer`);
+  }
+  // The Unlicense carries no conditions, so Classic Staunton has nothing to reproduce.
+  assert.ok(!read('dist/pieces/classic-staunton.js').includes('Redistribution and use'),
+    'classic-staunton should not claim a licence it is not under');
+
   for (const f of ['src', 'tools'].flatMap((d) => fs.readdirSync(path.join(root, d), { recursive: true }).map((x) => path.join(d, x)))) {
     if (/\.(m?js|css|py)$/.test(f)) {
       const text = read(f);
