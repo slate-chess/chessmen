@@ -9,7 +9,7 @@
   `b.setTheme()`, `b.version`, the `"Position N"` picker label, that `appearance` needs `controls`, that `pieces`
   throws when no set is loaded at all, `setMarks`'s board argument and the full `createStage` option list, and
   added `--cm-text` to the custom-property list. No runtime behaviour changed.
-- Tests: 16 → 53. The board and stage are now mounted in a minimal DOM (`test/dom.js`, no new dependency) to
+- Tests: 16 → 52. The board and stage are now mounted in a minimal DOM (`test/dom.js`, no new dependency) to
   cover `create()`'s options, autoplay semantics (interval, end pause, loop, reduced motion, hidden tab, off
   screen), the controls, the keyboard, the events, the appearance menus, the `remember` round-trip, `autoInit`
   and `listen`, plus edge cases for `splitPGN`, `isFEN`, `toGames`, `findPly` and the theme fallbacks.
