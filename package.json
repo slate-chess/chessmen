@@ -80,7 +80,7 @@
   },
   "devDependencies": {
     "esbuild": "0.28.2",
-    "typescript": "5.9.2"
+    "typescript": "7.0.2"
   },
   "author": "Turtle Leap LLC (https://slatechess.com)",
   "license": "Apache-2.0"
